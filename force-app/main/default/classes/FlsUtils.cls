@@ -4,12 +4,20 @@
  * @Author             : agentgill
  * @Group              :
  * @Last Modified By   : agentgill
- * @Last Modified On   : 24/05/2020, 10:46:39
+ * @Last Modified On   : 24/05/2020, 10:56:20
  * @Modification Log   :
  * Ver       Date            Author      		    Modification
  * 1.0    24/05/2020   agentgill     Initial Version
  **/
 public with sharing class FlsUtils {
+    /**
+     * @description Check CRUD & FLS
+     * @author agentgill | 24/05/2020
+     * @param sObj
+     * @param fldsToCheck
+     * @param flsChecks
+     * @return Boolean
+     **/
     public static Boolean checkFls(
         sObject sObj,
         String[] fldsToCheck,
