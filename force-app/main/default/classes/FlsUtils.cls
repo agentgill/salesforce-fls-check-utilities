@@ -4,10 +4,17 @@
  * @Author             : agentgill
  * @Group              :
  * @Last Modified By   : agentgill
- * @Last Modified On   : 24/05/2020, 10:56:20
+ * @Last Modified On   : 27/05/2020, 06:59:48
  * @Modification Log   :
  * Ver       Date            Author      		    Modification
  * 1.0    24/05/2020   agentgill     Initial Version
+ * 1.1    27/05/2020   agentgill     Throw Exception on False & Get Namespace
+ 
+CREATABLE
+READABLE
+UPDATABLE
+UPSERTABLE
+
  **/
 public with sharing class FlsUtils {
     /**
@@ -18,6 +25,7 @@ public with sharing class FlsUtils {
      * @param flsChecks
      * @return Boolean
      **/
+
     public static Boolean checkFls(
         sObject sObj,
         String[] fldsToCheck,
@@ -29,6 +37,22 @@ public with sharing class FlsUtils {
         Boolean runApex = false;
         for (String checks : flsChecks) {
             switch on checks {
+                // USE SALESFORCE NEW EMUMS
+                when 'CREATEABLE' {
+                    if (describeResult.isAccessible()) {
+                        for (String fld : fldsToCheck) {
+                            if (
+                                fieldMap.get(getNamespacePrefix() + fld)
+                                    .getDescribe()
+                                    .isAccessible()
+                            ) {
+                                runApex = true;
+                            }
+                        }
+                    }
+                }
+                // END NEW ENUMS
+
                 when 'isAccessible' {
                     if (describeResult.isAccessible()) {
                         for (String fld : fldsToCheck) {
@@ -74,9 +98,14 @@ public with sharing class FlsUtils {
                     }
                 }
                 when else {
-                    runApex = false;
+                    throw new VollyException(
+                        'EXCEPTION:Access Type not specified'
+                    );
                 }
             }
+        }
+        if (!runApex) {
+            throw new VollyException('EXCEPTION:FLS Check Failed' + flsChecks);
         }
         return runApex;
     }
@@ -89,13 +118,13 @@ public with sharing class FlsUtils {
     private static String getNamespacePrefix() {
         // Available to all users within org
         String ns = null;
-        Organization org = [
+        ApexClass ac = [
             SELECT NamespacePrefix
-            FROM Organization
-            WHERE NamespacePrefix != null
+            FROM ApexClass
+            WHERE Name LIKE 'YOURNAMESPACE%'
         ];
-        if (org != null) {
-            ns = org.NamespacePrefix + '__';
+        if (ac != null) {
+            ns = ac.NamespacePrefix + '__';
         }
         return ns;
     }
