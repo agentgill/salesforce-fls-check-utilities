@@ -98,14 +98,14 @@ public with sharing class FlsUtils {
                     }
                 }
                 when else {
-                    throw new VollyException(
+                    throw new YourException(
                         'EXCEPTION:Access Type not specified'
                     );
                 }
             }
         }
         if (!runApex) {
-            throw new VollyException('EXCEPTION:FLS Check Failed' + flsChecks);
+            throw new YourException('EXCEPTION:FLS Check Failed' + flsChecks);
         }
         return runApex;
     }
